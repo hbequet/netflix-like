@@ -32,3 +32,9 @@ Il y a également une bar de recherche permetttant de lancer un nouveau menu n'a
 Pour éviter la surcharge de données il vaut mieux opter pour du lazy loading (permet d'autoriser l'infinite scroll en évitant la dégradation des performances).
 
 Dans le back-end il y a des routes permettant d'obtenir toutes les séries mais également de les charger par block.
+
+# Affichage page d'accueil
+Sur la page d'accueil, il y a un texte en haut à gauche avec une bar de recherche à droite.
+
+Ensuite une liste de carrouselle accompagnée d'un titre représentant chaque catégorie. 
+Le carrousselle contient donc les images de chaque présentation de chaque programme.
