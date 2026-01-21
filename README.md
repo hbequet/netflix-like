@@ -24,4 +24,11 @@ Mais sans temps de chargement au début.
 Il y a également les différents types de piles techniques représentants l'ensemble de technologies utilisées pour faire fonctionner une application web.
 
 # Pour ce qui est de Netflix ?
-Netflix étant un projet qui n'a pas forcément besoin d'être rapide à l'utilisation mais de pouvoir rapidement se charger, il vaudrait mieux opter pour une application SSR.
+Netflix étant un projet qui n'a pas forcément besoin d'être rapide à l'utilisation mais de pouvoir rapidement se charger, il vaudrait mieux opter pour une application avec un rendu SSR.
+
+Dans le front-end Netflix il y a une sidebar permettant la navigation à travers l'application. 
+Un menu principal permettant de visualiser les séries et films avec une image disponibles triés par catégorie. 
+Il y a également une bar de recherche permetttant de lancer un nouveau menu n'affichant que des programmes correspondant à la recherche. 
+Pour éviter la surcharge de données il vaut mieux opter pour du lazy loading (permet d'autoriser l'infinite scroll en évitant la dégradation des performances).
+
+Dans le back-end il y a des routes permettant d'obtenir toutes les séries mais également de les charger par block.
