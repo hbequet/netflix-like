@@ -45,3 +45,12 @@ La sidebar permet de se login, d'aller sur la home page (via une icon à en haut
 Au hover d'une page de programme, la carte se grossie et une description apparait avec le titre en haut et en bas les catégories associées au programme.
 
 ![](resources/netflux.png)
+
+# Endpoints utilisés par le front
+- /api/series : obtension des séries
+- /api/series/:id : obtension d'une série et de ces informations
+- /api/series/:id/episodes : obtenir des informations sur une épisode précis
+- /api/search/:query : permet de rechercher un programme par son titre
+- /api/categories : permet d'obtenir toutes les catégories
+- /api/categories/:id/series : permet d'obtenir les séries d'une catégorie
+- /api/series/:id/images : permet d'obtenir les images de présentations
