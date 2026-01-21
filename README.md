@@ -1,14 +1,17 @@
 # Identité : Hugo Bequet
+2ème année de BUT informatique
 
 # Ce que j'ai compris du cours
 Il existe une différence entre une application web et un site web.
 
 Un site web est un domaine unique et donc est en général plus simple (voire statique) alors qu'une application web possède plusieurs domaines.
 
-Une application web est séparée en 3 composants :
+Une application web est séparée en 3 couches :
 - front-end : l'interface utilisateur
 - back-end : ce qui s'occupe de gérer les actions d'un utilisateur sur l'interface utilisateur
 - base de données : s'occupe de gérer le stockage des données pour l'application
+
+Le front-end communique avec le back-end via une API. Et le back-end communique directement avec la base de données.
 
 Il y a également plusieurs manières de rendre l'application. Soit CSR (Client Side Rendering) soit SSR (Server Side Rendering).
 
@@ -19,3 +22,6 @@ C'est aussi son défaut puisqu'une latence du serveur induit également à une l
 Mais sans temps de chargement au début.
 
 Il y a également les différents types de piles techniques représentants l'ensemble de technologies utilisées pour faire fonctionner une application web.
+
+# Pour ce qui est de Netflix ?
+Netflix étant un projet qui n'a pas forcément besoin d'être rapide à l'utilisation mais de pouvoir rapidement se charger, il vaudrait mieux opter pour une application SSR.
