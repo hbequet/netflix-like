@@ -43,3 +43,5 @@ La sidebar se situe à gauche de la page.
 La sidebar permet de se login, d'aller sur la home page (via une icon à en haut à gauche), d'aller dans les paramètres, de gérer son compte.
 
 Au hover d'une page de programme, la carte se grossie et une description apparait avec le titre en haut et en bas les catégories associées au programme.
+
+![](resources/netflux.png)
