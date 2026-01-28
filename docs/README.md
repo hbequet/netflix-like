@@ -44,7 +44,7 @@ La sidebar permet de se login, d'aller sur la home page (via une icon à en haut
 
 Au hover d'une page de programme, la carte se grossie et une description apparait avec le titre en haut et en bas les catégories associées au programme.
 
-![](resources/netflux.png)
+![](../resources/netflux.png)
 
 # Endpoints utilisés par le front
 - /api/series : obtension des séries
