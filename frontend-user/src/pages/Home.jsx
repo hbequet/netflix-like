@@ -1,10 +1,17 @@
 import MovieHero from "../components/movies/MovieHero.jsx";
 import MovieList from "../components/movies/MovieList.jsx";
 import {useEffect, useState} from "react";
+import MovieFilter from "../components/movies/MovieFilter.jsx";
 
 function Home() {
     const [populareMovies, setPopulareMovies] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [filteredMovies, setFilteredMovies] = useState([]);
+
+    useEffect(() => {
+        setFilteredMovies(populareMovies.data);
+    })
 
     useEffect(() => {
         fetch('http://localhost:5000/api/movies/random/5')
@@ -15,18 +22,6 @@ function Home() {
             })
             .catch(err => console.error("Erreur lors du chargement:", err));
     }, []);
-
-    const [genreMovies, setGenreMovies] = useState([]);
-    useEffect(() => {
-        fetch('http://localhost:5000/api/movies/genre/Action/5')
-            .then(res => res.json())
-            .then(data => {
-                setGenreMovies(data);
-                setLoading(false);
-            })
-            .catch(err => console.error("Erreur lors du chargement:", err));
-    }, []);
-    console.log(genreMovies)
 
     const [afterMovies, setAfterMovies] = useState([]);
     useEffect(() => {
@@ -52,8 +47,13 @@ function Home() {
             </section>
 
             <section className="py-8">
-                <h1 className="text-2xl font-bold px-4">Films d'Action</h1>
-                <MovieList movies={genreMovies.data} />
+                <MovieFilter
+                    movies={populareMovies.data}
+                    onFilter={setFilteredMovies}
+                />
+
+                <h1 className="text-2xl font-bold px-4">Films disponibles</h1>
+                <MovieList movies={filteredMovies} />
             </section>
 
             <section className="py-8">
