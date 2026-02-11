@@ -1,6 +1,17 @@
 import Button from '../common/Button';
 
+const genreColors = {
+    'Action': 'bg-red-500',
+    'Comédie': 'bg-yellow-500',
+    'Drame': 'bg-blue-500',
+    'Science-Fiction': 'bg-purple-500',
+    'Horreur': 'bg-orange-500',
+    'Thriller': 'bg-gray-500'
+};
+
 function MovieCard({ movie }) {
+    const bgColor = genreColors[movie.genre];
+
     return (
         <div className="group relative overflow-hidden rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105">
             {/* Image principale */}
@@ -15,6 +26,11 @@ function MovieCard({ movie }) {
                     <span className="text-yellow-400 font-bold text-sm">
                         {movie.rating}
                 </span>
+                </div>
+
+                {/* Badge de genre */}
+                <div className={`absolute bottom-2 left-2 ${bgColor} px-2 py-1 rounded text-white font-bold text-xs uppercase tracking-wider shadow-lg`}>
+                    {movie.genre}
                 </div>
             </div>
             {/* Overlay au hover */}
