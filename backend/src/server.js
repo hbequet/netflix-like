@@ -88,3 +88,25 @@ app.get('/api/movies/genre/:genre/:limit', async (req, res) => {
         data: genreMovies.slice(0, limit)
     });
 });
+
+app.get('/api/movies/after/:year/:limit', async (req, res) => {
+    const year = parseInt(req.params.year);
+    const limit = parseInt(req.params.limit);
+
+    const movies = await retrieveMovies();
+
+    if (!movies.success) {
+        return res.status(500).json({ success: false, message: "Erreur de récupération" });
+    }
+
+    const afterMovies = movies.data.filter(movie =>
+        movie.year >= year
+    );
+
+    res.json({
+        success: true,
+        message: `Voici les ${limit} films après ${year}`,
+        limitRequested: limit,
+        data: afterMovies.slice(0, limit)
+    });
+});
