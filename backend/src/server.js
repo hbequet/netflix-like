@@ -66,3 +66,25 @@ app.get('/api/movies/random/:limit', async (req, res) => {
         data: getRandomMovies(movies.data, limit)
     });
 });
+
+app.get('/api/movies/genre/:genre/:limit', async (req, res) => {
+    const limit = parseInt(req.params.limit);
+    const genre = req.params.genre;
+
+    const movies = await retrieveMovies();
+
+    if (!movies.success) {
+        return res.status(500).json({ success: false, message: "Erreur de récupération" });
+    }
+
+    const genreMovies = movies.data.filter(movie =>
+        movie.genre.toLowerCase() === genre.toLowerCase()
+    );
+
+    res.json({
+        success: true,
+        message: `Voici les ${limit} films du genre ${genre}`,
+        limitRequested: limit,
+        data: genreMovies.slice(0, limit)
+    });
+});
