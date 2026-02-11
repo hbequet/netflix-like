@@ -15,7 +15,7 @@ function SearchBar() {
             </button>
             {/* Input de recherche (apparaît au clic) */}
             {isOpen && (
-                <div className="absolute top-0 right-7">
+                <div className="absolute top-1/2 right-8 -translate-y-1/2">
                     <input type="text" value={searchTerm}
                            onChange={(e) => setSearchTerm(e.target.value)}
                            placeholder="Rechercher un film..."
