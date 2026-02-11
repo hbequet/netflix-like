@@ -1,9 +1,26 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { readFile } from 'fs/promises';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+const getRandomMovies = (arr, n) => {
+    return [...arr].sort(() => 0.5 - Math.random()).slice(0, n);
+};
+
+async function retrieveMovies() {
+    try {
+        const rawData = await readFile('./../data/movies.json', 'utf-8');
+        const movies = JSON.parse(rawData);
+
+        return { success: true, data: movies };
+    } catch (error) {
+        console.error("Erreur de lecture :", error);
+        return { success: false, data: [] };
+    }
+}
 
 // Middlewares
 app.use(cors({
@@ -28,13 +45,24 @@ app.listen(PORT, () => {
     console.log(`��������� Environment: ${process.env.NODE_ENV}`);
 });
 
-app.get('/api/movies', (req, res) => {
+app.get('/api/movies', async (req, res) => {
+    const result = await retrieveMovies();
+
+    if (result.success) {
+        res.json(result.data);
+    } else {
+        res.status(500).json({ message: "Impossible de lire les films" });
+    }
+});
+
+app.get('/api/movies/random/:limit', async (req, res) => {
+    const limit = req.params.limit;
+    const movies = await retrieveMovies()
+
     res.json({
-        success: true,
-        message: 'API Movies endpoint',
-        data: [
-            { id: 1, title: 'Inception', year: 2010 },
-            { id: 2, title: 'The Dark Knight', year: 2008 }
-        ]
+        success: movies.success,
+        message: `Voici ${limit} films aléatoires`,
+        limitRequested: limit,
+        data: getRandomMovies(movies.data, limit)
     });
 });
