@@ -2,6 +2,7 @@ import MovieHero from "../components/movies/MovieHero.jsx";
 import MovieList from "../components/movies/MovieList.jsx";
 import {useEffect, useState} from "react";
 import MovieFilter from "../components/movies/MovieFilter.jsx";
+import Navbar from "../components/common/Navbar.jsx";
 
 function Home() {
     const [populareMovies, setPopulareMovies] = useState([]);
@@ -11,7 +12,7 @@ function Home() {
 
     useEffect(() => {
         setFilteredMovies(populareMovies.data);
-    })
+    }, [])
 
     useEffect(() => {
         fetch('http://localhost:5000/api/movies/random/5')
@@ -39,6 +40,8 @@ function Home() {
 
     return (
         <div>
+            <Navbar movies={populareMovies.data} />
+
             <MovieHero movie={populareMovies.data[0]} />
 
             <section className="py-8">
