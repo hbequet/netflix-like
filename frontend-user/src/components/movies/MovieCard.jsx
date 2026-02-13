@@ -9,7 +9,7 @@ const genreColors = {
     'Thriller': 'bg-gray-500'
 };
 
-function MovieCard({ movie }) {
+function MovieCard({ movie, addToCart }) {
     const bgColor = genreColors[movie.genre];
 
     return (
@@ -45,7 +45,7 @@ function MovieCard({ movie }) {
                     {movie.description}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
-                    <Button size="sm" className="flex-1">
+                    <Button size="sm" className="flex-1" onClick={() => addToCart(movie)}>
                         ▶ Louer {movie.price}€
                     </Button>
                     <Button variant="outline" size="sm" className="flex-1">

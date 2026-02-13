@@ -10,6 +10,8 @@ function Home() {
 
     const [filteredMovies, setFilteredMovies] = useState([]);
 
+    const [cartItems, setCartItems] = useState([]);
+
     useEffect(() => {
         setFilteredMovies(populareMovies.data);
     }, [])
@@ -38,15 +40,24 @@ function Home() {
 
     if (loading) return <p className="text-center py-10">Chargement des films...</p>;
 
+    function addToCart(movie) {
+        if (cartItems.find(m => m.id === movie.id)) return;
+        setCartItems([...cartItems, movie]);
+    }
+
+    function onRemoveFromCart(id) {
+        setCartItems(cartItems.filter(m => m.id !== id));
+    }
+
     return (
         <div>
-            <Navbar movies={populareMovies.data} />
+            <Navbar movies={populareMovies.data} cartItems={cartItems} onRemoveFromCart={onRemoveFromCart} />
 
             <MovieHero movie={populareMovies.data[0]} />
 
             <section className="py-8">
                 <h1 className="text-2xl font-bold px-4">Films populaires</h1>
-                <MovieList movies={populareMovies.data} />
+                <MovieList movies={populareMovies.data} addToCart={addToCart} />
             </section>
 
             <section className="py-8">
@@ -56,12 +67,12 @@ function Home() {
                 />
 
                 <h1 className="text-2xl font-bold px-4">Films disponibles</h1>
-                <MovieList movies={filteredMovies} />
+                <MovieList movies={filteredMovies} addToCart={addToCart} />
             </section>
 
             <section className="py-8">
                 <h1 className="text-2xl font-bold px-4">Films récents</h1>
-                <MovieList movies={afterMovies.data} />
+                <MovieList movies={afterMovies.data} addToCart={addToCart} />
             </section>
         </div>
     );

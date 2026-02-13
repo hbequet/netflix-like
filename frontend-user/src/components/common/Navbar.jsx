@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import SearchBar from "../movies/SearchBar.jsx";
+import CartButton from "./CartButton.jsx";
 
-function Navbar({movies}) {
+function Navbar({movies, cartItems, onRemoveFromCart}) {
     const [isScrolled, setIsScrolled] = useState(false);
+
     return (
         <nav className={`fixed top-0 w-full z-50 transition-colors duration-300
 ${
@@ -35,7 +37,7 @@ ${
                     {/* User Section */}
                     <div className="flex items-center space-x-4">
                         <SearchBar movies={movies} />
-                        {/* User Avatar */}
+                        <CartButton cartItems={cartItems} onRemoveFromCart={onRemoveFromCart} />
                         <div className="w-8 h-8 bg-primary rounded flex items-center justify-center cursor-pointer hover:bg-primary-dark transition-colors">
                             <span className="text-sm font-bold">U</span>
                         </div>
