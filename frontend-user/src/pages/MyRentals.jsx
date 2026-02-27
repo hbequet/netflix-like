@@ -2,9 +2,10 @@ import Button from "../components/common/Button.jsx";
 import {Link} from "react-router-dom";
 import Navbar from "../components/common/Navbar.jsx";
 import Footer from "../components/layout/Footer.jsx";
+import MovieCard from "../components/movies/MovieCard.jsx";
 
 function MyRentals() {
-    const rentals = [];
+    const rentals = localStorage.getItem('rentals') ? JSON.parse(localStorage.getItem('rentals')) : [];
 
     if (rentals.length === 0) return (
         <div className="min-h-screen bg-black text-white pt-24 px-8">
@@ -43,7 +44,30 @@ function MyRentals() {
     )
 
     return (
-        <div>Pas vide</div>
+        <div className="min-h-screen bg-black text-white pt-24 px-8">
+            <Navbar />
+
+            <h1 className="text-4xl font-bold mb-12">Mes locations</h1>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 px-4">
+                {rentals?.map((movie) => (
+                    <div>
+                        <img
+                            src={movie.foundMovie.poster}
+                            alt={movie.foundMovie.title}
+                            className="w-full h-full object-cover"
+                        />
+                        <h1>
+                            {movie.foundMovie.title}
+                        </h1>
+
+                        <p className="text-gray-600">Expire le : {movie.expiryDate.split("T")[0].replaceAll("-", "/")}</p>
+                    </div>
+                ))}
+            </div>
+
+            <Footer />
+        </div>
     );
 }
 

@@ -28,6 +28,8 @@ function MovieInfo({ movie, setNotification }) {
 
         rentals.push(rental);
 
+        localStorage.setItem('rentals', JSON.stringify(rentals));
+
         setNotification({ type: 'success', message: 'Film loué avec succès !' });
 
         setTimeout(() => {
