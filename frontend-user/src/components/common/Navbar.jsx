@@ -43,7 +43,9 @@ ${
                     {/* User Section */}
                     <div className="flex items-center space-x-4">
                         <SearchBar movies={movies} />
-                        <CartButton cartItems={cartItems} onRemoveFromCart={onRemoveFromCart} />
+                        {isSet && (
+                            <CartButton cartItems={cartItems} onRemoveFromCart={onRemoveFromCart} />
+                        )}
 
                         <NavLink to={"/login"}>
                             {isSet && (
