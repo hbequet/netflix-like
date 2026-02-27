@@ -5,12 +5,14 @@ import Navbar from "../components/common/Navbar.jsx";
 import Button from "../components/common/Button.jsx";
 import MovieInfo from "../components/movies/MovieInfo.jsx";
 import Footer from "../components/layout/Footer.jsx";
+import Breadcrumb from "../components/common/Breadcrumb.jsx";
 
 function MovieDetail() {
     const { id } = useParams();
     let navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [foundMovie, setFoundMovie] = useState(null);
+    const [notification, setNotification] = useState(null);
 
     const toHome = (e) => {
         navigate('/');
@@ -55,7 +57,18 @@ function MovieDetail() {
         <div>
             <Navbar movies={moviesData} />
 
-            <MovieInfo movie={foundMovie} />
+            <div className="container mx-auto px-4 pt-24">
+                <Breadcrumb items={[ { label: 'Films', path: '/' }, { label: foundMovie.genre, path: `/?genre=${foundMovie.genre}` }, { label: foundMovie.title }]} />
+            </div>
+
+            {/* Notification */}
+            {notification && (
+                <div className={`fixed top-20 right-4 px-6 py-3 rounded-lg shadow-xl z-50 ${
+                    notification.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                }`}> {notification.message}</div>
+            )}
+
+            <MovieInfo movie={foundMovie} setNotification={setNotification} />
 
             <Footer />
         </div>

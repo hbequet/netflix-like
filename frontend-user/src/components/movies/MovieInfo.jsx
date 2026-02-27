@@ -1,7 +1,40 @@
 import Button from '../common/Button';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import Footer from "../layout/Footer.jsx";
 
-function MovieInfo({ movie }) {
+function MovieInfo({ movie, setNotification }) {
+    let navigate = useNavigate();
+
+    const handleRent = () => {
+        if (localStorage.getItem('user') === null) {
+            navigate('/login');
+            return;
+        }
+
+        const rental = {
+            foundMovie: movie,
+            rentalDate: new Date().toISOString(),
+            expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        };
+
+        let rentals = localStorage.getItem('rentals');
+        rentals = rentals ? JSON.parse(rentals) : [];
+
+        const alreadyRented = rentals.some(item => item.foundMovie.id === movie.id);
+        if (alreadyRented) {
+            setNotification({type: 'error', message: 'Vous avez déjà loué ce film'});
+            return;
+        }
+
+        rentals.push(rental);
+
+        setNotification({ type: 'success', message: 'Film loué avec succès !' });
+
+        setTimeout(() => {
+            navigate('/my-rentals');
+        }, 2000)
+    }
+
     return (
         <div className="bg-[#0a0a0b] text-white min-h-screen">
             <div className="relative h-[60vh] w-full">
@@ -42,9 +75,7 @@ function MovieInfo({ movie }) {
                             </p>
                         </div>
 
-                        <Button size="lg" className="bg-red-600 hover:bg-red-700 py-3 px-8 rounded-md flex items-center">
-                            <span className="mr-2">🎬</span> Louer pour {movie.price}€
-                        </Button>
+                        <Button size="lg" onClick={handleRent} className="mb-8">🎬 Louer pour {movie.price}€</Button>
 
                         {/* Technical info */}
                         <div className="bg-[#16161a] rounded-lg p-6 border border-gray-800">
