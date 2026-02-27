@@ -5,9 +5,15 @@ function NotFound() {
     let navigate = useNavigate();
 
     return <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-4xl font-bold mb-4 text-white">
-            Page inconnue
+        <h1 className="text-8xl font-bold mb-4 text-red-600">
+            404
         </h1>
+
+        <h2 className="text-3xl font-bold mb-4 text-white">
+            Page introuvable
+        </h2>
+
+        <p className="text-gray-600">Oups ! La page que vous recherchez n'existe pas.</p>
 
         <Button size="sm" onClick={() => navigate("/")}>
             Retour à l'accueil
