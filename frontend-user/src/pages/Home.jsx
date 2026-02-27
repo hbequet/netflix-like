@@ -3,6 +3,7 @@ import MovieList from "../components/movies/MovieList.jsx";
 import {useEffect, useState} from "react";
 import MovieFilter from "../components/movies/MovieFilter.jsx";
 import Navbar from "../components/common/Navbar.jsx";
+import moviesData from '../../../data/movies.json';
 
 function Home() {
     const [populareMovies, setPopulareMovies] = useState([]);
@@ -12,30 +13,36 @@ function Home() {
 
     const [cartItems, setCartItems] = useState([]);
 
+    const [afterMovies, setAfterMovies] = useState([]);
+
     useEffect(() => {
-        setFilteredMovies(populareMovies.data);
+        setFilteredMovies(moviesData);
+        setPopulareMovies([...moviesData].sort(() => 0.5 - Math.random()).slice(0, 5));
+        setAfterMovies(moviesData.filter(movie =>
+            movie.year >= 2010
+        ).slice(0, 5));
+        setLoading(false);
     }, [])
 
-    useEffect(() => {
-        fetch('http://localhost:5000/api/movies/random/5')
-            .then(res => res.json())
-            .then(data => {
-                setPopulareMovies(data);
-                setLoading(false);
-            })
-            .catch(err => console.error("Erreur lors du chargement:", err));
-    }, []);
+    // useEffect(() => {
+    //     fetch('http://localhost:5000/api/movies/random/5')
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             setPopulareMovies(data);
+    //             setLoading(false);
+    //         })
+    //         .catch(err => console.error("Erreur lors du chargement:", err));
+    // }, []);
 
-    const [afterMovies, setAfterMovies] = useState([]);
-    useEffect(() => {
-        fetch('http://localhost:5000/api/movies/after/2010/5')
-            .then(res => res.json())
-            .then(data => {
-                setAfterMovies(data);
-                setLoading(false);
-            })
-            .catch(err => console.error("Erreur lors du chargement:", err));
-    }, []);
+    // useEffect(() => {
+    //     fetch('http://localhost:5000/api/movies/after/2010/5')
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             setAfterMovies(data);
+    //             setLoading(false);
+    //         })
+    //         .catch(err => console.error("Erreur lors du chargement:", err));
+    // }, []);
     console.log(afterMovies)
 
     if (loading) return <p className="text-center py-10">Chargement des films...</p>;
@@ -51,18 +58,18 @@ function Home() {
 
     return (
         <div>
-            <Navbar movies={populareMovies.data} cartItems={cartItems} onRemoveFromCart={onRemoveFromCart} />
+            <Navbar movies={populareMovies} cartItems={cartItems} onRemoveFromCart={onRemoveFromCart} />
 
-            <MovieHero movie={populareMovies.data[0]} />
+            <MovieHero movie={populareMovies[0]} />
 
             <section className="py-8">
                 <h1 className="text-2xl font-bold px-4">Films populaires</h1>
-                <MovieList movies={populareMovies.data} addToCart={addToCart} />
+                <MovieList movies={populareMovies} addToCart={addToCart} />
             </section>
 
             <section className="py-8">
                 <MovieFilter
-                    movies={populareMovies.data}
+                    movies={populareMovies}
                     onFilter={setFilteredMovies}
                 />
 
@@ -72,7 +79,7 @@ function Home() {
 
             <section className="py-8">
                 <h1 className="text-2xl font-bold px-4">Films récents</h1>
-                <MovieList movies={afterMovies.data} addToCart={addToCart} />
+                <MovieList movies={afterMovies} addToCart={addToCart} />
             </section>
         </div>
     );
