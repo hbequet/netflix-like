@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from "./utils/ProtectedRoute.jsx";
 import MyRentals from './pages/MyRentals';
+import Register from "./pages/Register.jsx";
 {/*
 import Register from './pages/Register';
 */}
@@ -16,7 +17,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/movie/:id" element={<MovieDetail />} />
                     <Route path="/login" element={<Login />} />
-                    {/*<Route path="/register" element={<Register />} />*/}
+                    <Route path="/register" element={<Register />} />
 
                     <Route
                         path="/my-rentals"
