@@ -1,28 +1,20 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { readFile } from 'fs/promises';
+import connectDB from './config/database.js';
+import mongoose from "mongoose";
+
+// Charger les variables d'environnement
 dotenv.config();
+
+// Initialiser Express
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const getRandomMovies = (arr, n) => {
-    return [...arr].sort(() => 0.5 - Math.random()).slice(0, n);
-};
+// Connecter à MongoDB
+connectDB();
 
-async function retrieveMovies() {
-    try {
-        const rawData = await readFile('./../data/movies.json', 'utf-8');
-        const movies = JSON.parse(rawData);
-
-        return { success: true, data: movies };
-    } catch (error) {
-        console.error("Erreur de lecture :", error);
-        return { success: false, data: [] };
-    }
-}
-
-// Middlewares
+// Middlewares globaux
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:3000',
     credentials: true
@@ -30,83 +22,105 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Route de test
+// Logger simple pour le développement
+if (process.env.NODE_ENV === 'development') {
+    app.use((req, res, next) => {
+        console.log(`${req.method} ${req.path}`);
+        next();
+    });
+}
+// Routes de test
+app.get('/', (req, res) => {
+    res.json({
+        message: 'Netflix API',
+        version: '1.0.0',
+        endpoints: {
+            health: '/api/health',
+            movies: '/api/movies',
+            auth: '/api/auth',
+            rentals: '/api/rentals'
+        }
+    });
+});
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
         message: 'API Netflix is running',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+    });
+});
+
+// TODO: Importer et utiliser les routes - Prochaine séance si vous n’êtes pas trop lent ☺
+// import movieRoutes from './routes/movie.routes.js';
+// import authRoutes from './routes/auth.routes.js';
+// import rentalRoutes from './routes/rental.routes.js';
+// app.use('/api/movies', movieRoutes);
+// app.use('/api/auth', authRoutes);
+// app.use('/api/rentals', rentalRoutes);
+// Gestion des erreurs 404
+
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: 'Route not found',
+        path: req.path
+    });
+});
+
+// Middleware de gestion d'erreurs global
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    // Erreur de validation Mongoose
+    if (err.name === 'ValidationError') {
+        const messages = Object.values(err.errors).map(e => e.message);
+        return res.status(400).json({
+            success: false,
+            message: 'Erreur de validation',
+            errors: messages
+        });
+    }
+    // Erreur de cast Mongoose (ID invalide)
+    if (err.name === 'CastError') {
+        return res.status(400).json({
+            success: false,
+            message: 'ID invalide'
+        });
+    }
+    // Erreur de duplication (email déjà utilisé)
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyPattern)[0];
+        return res.status(400).json({
+            success: false,
+            message: `${field} déjà utilisé`
+        });
+    }
+    // Erreur par défaut
+    res.status(err.statusCode || 500).json({
+        success: false,
+        message: err.message || 'Internal Server Error',
+        ...(process.env.NODE_ENV === 'development' && {
+            stack: err.stack,
+            error: err
+        })
     });
 });
 
 // Démarrer le serveur
 app.listen(PORT, () => {
-    console.log(`������� Server running on http://localhost:${PORT}`);
-    console.log(`��������� Environment: ${process.env.NODE_ENV}`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📝 Environment: ${process.env.NODE_ENV}`);
+    console.log(`🌐 API URL: http://localhost:${PORT}/api`);
 });
 
-app.get('/api/movies', async (req, res) => {
-    const result = await retrieveMovies();
-
-    if (result.success) {
-        res.json(result.data);
-    } else {
-        res.status(500).json({ message: "Impossible de lire les films" });
-    }
+// Gestion des erreurs non gérées
+process.on('unhandledRejection', (err) => {
+    console.error('❌ Unhandled Rejection:', err);
+    process.exit(1);
+});
+process.on('uncaughtException', (err) => {
+    console.error('❌ Uncaught Exception:', err);
+    process.exit(1);
 });
 
-app.get('/api/movies/random/:limit', async (req, res) => {
-    const limit = req.params.limit;
-    const movies = await retrieveMovies()
-
-    res.json({
-        success: movies.success,
-        message: `Voici ${limit} films aléatoires`,
-        limitRequested: limit,
-        data: getRandomMovies(movies.data, limit)
-    });
-});
-
-app.get('/api/movies/genre/:genre/:limit', async (req, res) => {
-    const limit = parseInt(req.params.limit);
-    const genre = req.params.genre;
-
-    const movies = await retrieveMovies();
-
-    if (!movies.success) {
-        return res.status(500).json({ success: false, message: "Erreur de récupération" });
-    }
-
-    const genreMovies = movies.data.filter(movie =>
-        movie.genre.toLowerCase() === genre.toLowerCase()
-    );
-
-    res.json({
-        success: true,
-        message: `Voici les ${limit} films du genre ${genre}`,
-        limitRequested: limit,
-        data: genreMovies.slice(0, limit)
-    });
-});
-
-app.get('/api/movies/after/:year/:limit', async (req, res) => {
-    const year = parseInt(req.params.year);
-    const limit = parseInt(req.params.limit);
-
-    const movies = await retrieveMovies();
-
-    if (!movies.success) {
-        return res.status(500).json({ success: false, message: "Erreur de récupération" });
-    }
-
-    const afterMovies = movies.data.filter(movie =>
-        movie.year >= year
-    );
-
-    res.json({
-        success: true,
-        message: `Voici les ${limit} films après ${year}`,
-        limitRequested: limit,
-        data: afterMovies.slice(0, limit)
-    });
-});
+export default app;
