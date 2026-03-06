@@ -71,7 +71,7 @@ const testModels = async () => {
         const activeRentals = await Rental.getActiveRentals(testUser._id);
         console.log('✅ Locations actives:', activeRentals.length);
 
-        // Test 7: Méthodes statiques
+        // Test 7: Méthodes de création
         console.log('\nTest 7: Création d\'un film invalide (validation)');
         try {
             await Movie.create({
@@ -82,6 +82,17 @@ const testModels = async () => {
         } catch (error) {
             console.log('✅ Validation échouée comme prévu:', error.message);
         }
+
+        // Test 8: Méthodes statiques
+        console.log('\nTest 8: Méthodes statiques');
+        const sciFiMovies = await Movie.getByGenre("Science-Fiction");
+        console.log("Films Sci-Fi:", sciFiMovies.length);
+
+        const affordableMovies = await Movie.getByPriceRange(0, 4);
+        console.log("Films à moins de 4€:", affordableMovies.length);
+
+        const stats = await Movie.getStatsByGenre();
+        console.log("Statistiques par genre:", stats);
 
         // Nettoyage
         console.log('\n🧹 Nettoyage...');
