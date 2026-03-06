@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import MovieFilter from "../components/movies/MovieFilter.jsx";
 import Navbar from "../components/common/Navbar.jsx";
 import moviesData from '../../../data/movies.json';
+import LoadingSpinner from "../components/common/LoadingSpinner.jsx";
 
 function Home() {
     const [populareMovies, setPopulareMovies] = useState([]);
@@ -24,28 +25,9 @@ function Home() {
         setLoading(false);
     }, [])
 
-    // useEffect(() => {
-    //     fetch('http://localhost:5000/api/movies/random/5')
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             setPopulareMovies(data);
-    //             setLoading(false);
-    //         })
-    //         .catch(err => console.error("Erreur lors du chargement:", err));
-    // }, []);
-
-    // useEffect(() => {
-    //     fetch('http://localhost:5000/api/movies/after/2010/5')
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             setAfterMovies(data);
-    //             setLoading(false);
-    //         })
-    //         .catch(err => console.error("Erreur lors du chargement:", err));
-    // }, []);
     console.log(afterMovies)
 
-    if (loading) return <p className="text-center py-10">Chargement des films...</p>;
+    if (loading) return <LoadingSpinner />;
 
     function addToCart(movie) {
         if (cartItems.find(m => m.id === movie.id)) return;

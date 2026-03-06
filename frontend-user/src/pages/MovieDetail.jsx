@@ -6,6 +6,7 @@ import Button from "../components/common/Button.jsx";
 import MovieInfo from "../components/movies/MovieInfo.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Breadcrumb from "../components/common/Breadcrumb.jsx";
+import LoadingSpinner from "../components/common/LoadingSpinner.jsx";
 
 function MovieDetail() {
     const { id } = useParams();
@@ -30,10 +31,7 @@ function MovieDetail() {
 
     if (loading) {
         return (
-            <div className="loading-screen" style={{ backgroundColor: '#000', color: '#fff', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                <div className="spinner" />
-                <p style={{ marginTop: '20px', fontSize: '1.2rem' }}>Chargement...</p>
-            </div>
+            <LoadingSpinner />
         );
     }
 

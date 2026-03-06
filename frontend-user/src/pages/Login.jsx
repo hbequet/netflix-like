@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
 import Button from "../components/common/Button.jsx";
+import LoadingSpinner from "../components/common/LoadingSpinner.jsx";
 
 function Login() {
     const [formData, setFormData] = useState({email: "", password: ""});
@@ -35,7 +36,7 @@ function Login() {
         return errors;
     }
 
-    if (loading) return <p className="text-center py-10">Chargement du questionnaire</p>;
+    if (loading) return <LoadingSpinner />;
 
     function setEmail(value) {
         setFormData({...formData, email: value});
