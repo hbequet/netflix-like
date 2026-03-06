@@ -194,6 +194,7 @@ movieSchema.statics.getStatsByGenre = async function () {
         },
     ]);
 };
+
 const Movie = mongoose.model("Movie", movieSchema);
 
 export default Movie;
