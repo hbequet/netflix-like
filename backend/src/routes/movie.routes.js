@@ -7,6 +7,7 @@ import {
     deleteMovie,
     getMovieStats,
     getSimilarMovies
+
 } from '../controllers/movie.controller.js';
 // import { protect, admin } from '../middleware/auth.middleware.js'; // Séance 9
 const router = express.Router();
