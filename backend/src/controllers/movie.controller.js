@@ -143,5 +143,28 @@ export const deleteMovie = async (req, res, next) => {
 // @route GET /api/movies/stats
 // @access Private/Admin
 export const getMovieStats = async (req, res, next) => {
+    const totalRevenue = await Movie.aggregate([
+        {
+            $match: { isAvailable: true },
+        },
+        {
+            $group: {
+                _id: "$genre",
+                count: { $sum: 1 },
+                avgPrice: { $avg: "$price" },
+                avgRating: { $avg: "$rating" },
+                totalRentals: { $sum: "$rentalCount" },
+            },
+        },
+        {
+            $sort: { count: -1 },
+        },
+    ]);
 
+    return res.status(200).json({
+        "success": true,
+        "data": {
+            totalRevenue: totalRevenue
+        }
+    })
 }
