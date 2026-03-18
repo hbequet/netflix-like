@@ -2,6 +2,7 @@ import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
 import Button from "../components/common/Button.jsx";
 import LoadingSpinner from "../components/common/LoadingSpinner.jsx";
+import {useAuth} from "../context/AuthProvider.jsx";
 
 function Login() {
     const [formData, setFormData] = useState({email: "", password: ""});
@@ -9,24 +10,24 @@ function Login() {
     const [loading, setLoading] = useState(false);
     let navigate = useNavigate();
 
+    const { login } = useAuth();
     const handleSubmit = async (e) => {
+        console.log("submit");
         e.preventDefault();
-
         const newErrors = validateForm();
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
-
         setLoading(true);
-        setTimeout(() => {
-            localStorage.setItem('user',
-                JSON.stringify({email: formData.email,
-                name: formData.email.split('@')[0]
-                }));
-            setLoading(false);
+
+        const result = await login(formData.email, formData.password);
+        if (result.success) {
             navigate("/");
-        }, 1000);
+        } else {
+            setErrors(true);
+            setLoading(false);
+        }
     };
 
     const validateForm = () => {
