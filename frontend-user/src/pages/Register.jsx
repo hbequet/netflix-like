@@ -2,12 +2,14 @@ import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
 import Button from "../components/common/Button.jsx";
 import LoadingSpinner from "../components/common/LoadingSpinner.jsx";
+import {useAuth} from "../context/AuthProvider.jsx";
 
 function Register() {
     const [formData, setFormData] = useState({name: "", email: "", password: "", passwordConfirm: ""});
     const [errors, setErrors] = useState(false);
     const [loading, setLoading] = useState(false);
     let navigate = useNavigate();
+    let { register } = useAuth();
 
     const validateForm = () => {
         const newErrors = {};
@@ -38,6 +40,8 @@ function Register() {
             setErrors(newErrors);
             return;
         }
+
+        await register(formData.name, formData.email, formData.password);
 
         setLoading(true);
         setTimeout(() => {

@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
 
     // Fonction d'inscription
     const register = async (name, email, password) => {
-
+        await login(email, password);
     };
 
     // Fonction de déconnexion
