@@ -1,9 +1,13 @@
 import Button from '../common/Button';
 import {Link, useNavigate} from 'react-router-dom';
 import Footer from "../layout/Footer.jsx";
+import {useCart} from "../../context/CartContext.jsx";
 
 function MovieInfo({ movie, setNotification }) {
     let navigate = useNavigate();
+    let { addToCart, isInCart, isRented, getRentalByMovieId, rentMovie } = useCart();
+
+    console.log(isRented(movie.id))
 
     const handleRent = () => {
         if (localStorage.getItem('user') === null) {
@@ -11,30 +15,18 @@ function MovieInfo({ movie, setNotification }) {
             return;
         }
 
-        const rental = {
-            foundMovie: movie,
-            rentalDate: new Date().toISOString(),
-            expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-        };
-
-        let rentals = localStorage.getItem('rentals');
-        rentals = rentals ? JSON.parse(rentals) : [];
-
-        const alreadyRented = rentals.some(item => item.foundMovie.id === movie.id);
+        const alreadyRented = isRented(movie.id);
         if (alreadyRented) {
             setNotification({type: 'error', message: 'Vous avez déjà loué ce film'});
             return;
         }
 
-        rentals.push(rental);
-
-        localStorage.setItem('rentals', JSON.stringify(rentals));
-
+        rentMovie(movie)
         setNotification({ type: 'success', message: 'Film loué avec succès !' });
+    }
 
-        setTimeout(() => {
-            navigate('/my-rentals');
-        }, 2000)
+    const handleCart = () => {
+        addToCart(movie);
     }
 
     return (
@@ -77,7 +69,33 @@ function MovieInfo({ movie, setNotification }) {
                             </p>
                         </div>
 
-                        <Button size="lg" onClick={handleRent} className="mb-8">🎬 Louer pour {movie.price}€</Button>
+                        <div className="flex gap-4 mb-8">
+                            {isRented(movie.id) ? (
+                                <div className="flex items-center gap-2 bg-green-900/30 border border-green-500 text-green-500 px-6 py-3 rounded-lg font-medium">
+                                    <svg width="20" height="20" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                                        <polyline
+                                            points="10,25 22,37 40,15"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="6"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                    <span>Film loué jusqu'au {new Date(getRentalByMovieId(movie.id).expiryDate).toLocaleDateString('fr-FR')}</span>
+                                </div>
+                            ) : (
+                                <>
+                                    <Button size="lg" onClick={handleRent}>
+                                        🎬 Louer pour {movie.price}€
+                                    </Button>
+
+                                    <Button size="lg" onClick={handleCart} variant="secondary">
+                                        {isInCart(movie.id) ? "✅ Dans le panier" : "+ Ajouter au panier"}
+                                    </Button>
+                                </>
+                            )}
+                        </div>
 
                         {/* Technical info */}
                         <div className="bg-[#16161a] rounded-lg p-6 border border-gray-800">
