@@ -1,5 +1,6 @@
 import Button from '../common/Button';
 import {Link, useNavigate} from "react-router-dom";
+import {useCart} from "../../context/CartContext.jsx";
 
 const genreColors = {
     'Action': 'bg-red-500',
@@ -10,9 +11,10 @@ const genreColors = {
     'Thriller': 'bg-gray-500'
 };
 
-function MovieCard({ movie, addToCart }) {
+function MovieCard({ movie }) {
     const bgColor = genreColors[movie.genre];
     let navigate = useNavigate();
+    let { rentMovie } = useCart();
 
     return (
         <div className="group relative overflow-hidden rounded-lg cursor-pointer transition-transform duration-300 hover:scale-105">
@@ -47,7 +49,7 @@ function MovieCard({ movie, addToCart }) {
                     {movie.description}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2">
-                    <Button size="sm" className="flex-1" onClick={() => addToCart(movie)}>
+                    <Button size="sm" className="flex-1" onClick={() => rentMovie(movie)}>
                         ▶ Louer {movie.price}€
                     </Button>
                     <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate(`/movie/${movie.id}`)}>

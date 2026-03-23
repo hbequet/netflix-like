@@ -29,11 +29,6 @@ function Home() {
 
     if (loading) return <LoadingSpinner />;
 
-    function addToCart(movie) {
-        if (cartItems.find(m => m.id === movie.id)) return;
-        setCartItems([...cartItems, movie]);
-    }
-
     function onRemoveFromCart(id) {
         setCartItems(cartItems.filter(m => m.id !== id));
     }
@@ -45,8 +40,7 @@ function Home() {
             <MovieHero movie={populareMovies[0]} />
 
             <section className="py-8">
-                <h1 className="text-2xl font-bold px-4">Films populaires</h1>
-                <MovieList movies={populareMovies} addToCart={addToCart} />
+                <MovieList title="Films populaires" movies={populareMovies} />
             </section>
 
             <section className="py-8">
@@ -55,13 +49,11 @@ function Home() {
                     onFilter={setFilteredMovies}
                 />
 
-                <h1 className="text-2xl font-bold px-4">Films disponibles</h1>
-                <MovieList movies={filteredMovies} addToCart={addToCart} />
+                <MovieList title="Films disponibles" movies={filteredMovies} />
             </section>
 
             <section className="py-8">
-                <h1 className="text-2xl font-bold px-4">Films récents</h1>
-                <MovieList movies={afterMovies} addToCart={addToCart} />
+                <MovieList title="Films récents" movies={afterMovies} />
             </section>
         </div>
     );
