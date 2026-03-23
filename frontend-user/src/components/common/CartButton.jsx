@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import {useCart} from "../../context/CartContext.jsx";
 
-function CartButton({ cartItems = [], onRemoveFromCart }) {
+function CartButton() {
+    const { cart, getCartCount, removeFromCart } = useCart();
+
     const [showCart, setShowCart] = useState(false);
-    const cartCount = cartItems.length;
+    const cartCount = getCartCount();
 
     const toggleShow = () => {
         setShowCart(!showCart);
@@ -22,12 +25,12 @@ function CartButton({ cartItems = [], onRemoveFromCart }) {
                 )}
             </button>
 
-            {showCart && cartItems.length > 0 && (
+            {showCart && cartCount > 0 && (
                 <div className="absolute right-0 mt-8 w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-4">
-                    {cartItems.map(item => (
+                    {cart.map(item => (
                         <div
                             key={item.id}
-                            onDoubleClick={() => onRemoveFromCart(item.id)}
+                            onDoubleClick={() => removeFromCart(item.id)}
                             title="Double-cliquez pour retirer du panier"
                             className="flex items-center justify-between px-4 py-2 hover:bg-gray-800 cursor-pointer select-none transition-colors"
                         >

@@ -5,9 +5,8 @@ import {Link, NavLink, useNavigate} from 'react-router-dom';
 import Button from "./Button.jsx";
 import {useAuth} from "../../context/AuthProvider.jsx";
 
-function Navbar({movies, cartItems, onRemoveFromCart}) {
+function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
-    let navigate = useNavigate();
     const { user, logout, isAuthenticated } = useAuth();
 
     const isSet = localStorage.getItem('user') !== null;
@@ -61,6 +60,10 @@ function Navbar({movies, cartItems, onRemoveFromCart}) {
                                 />
                             </svg>
                         </button>
+
+                        {isAuthenticated() && (
+                            <CartButton />
+                        )}
 
                         {isAuthenticated() ? (
                             <div className="relative">
