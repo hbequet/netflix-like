@@ -1,14 +1,14 @@
-import { useState } from 'react';
 import {useCart} from "../../context/CartContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 function CartButton() {
-    const { cart, getCartCount, removeFromCart } = useCart();
+    let navigate = useNavigate();
+    const { getCartCount } = useCart();
 
-    const [showCart, setShowCart] = useState(false);
     const cartCount = getCartCount();
 
     const toggleShow = () => {
-        setShowCart(!showCart);
+        navigate("/cart");
     };
 
     return (
@@ -24,22 +24,6 @@ function CartButton() {
           </span>
                 )}
             </button>
-
-            {showCart && cartCount > 0 && (
-                <div className="absolute right-0 mt-8 w-80 bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-4">
-                    {cart.map(item => (
-                        <div
-                            key={item.id}
-                            onDoubleClick={() => removeFromCart(item.id)}
-                            title="Double-cliquez pour retirer du panier"
-                            className="flex items-center justify-between px-4 py-2 hover:bg-gray-800 cursor-pointer select-none transition-colors"
-                        >
-                            <span className="text-gray-300 font-medium">{item.title}</span>
-                            <span className="text-red-500 font-medium">{item.price} €</span>
-                        </div>
-                    ))}
-                </div>
-            )}
         </div>
     );
 }

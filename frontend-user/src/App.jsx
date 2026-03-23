@@ -9,6 +9,7 @@ import Register from "./pages/Register.jsx";
 import {ThemeProvider} from "./context/ThemeProvider.jsx";
 import {AuthProvider} from "./context/AuthProvider.jsx";
 import {CartProvider} from "./context/CartContext.jsx";
+import Cart from "./pages/Cart.jsx";
 
 {/*
 import Register from './pages/Register';
@@ -31,6 +32,15 @@ function App() {
                                     element={
                                         <ProtectedRoute>
                                             <MyRentals />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                <Route
+                                    path="/cart"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Cart />
                                         </ProtectedRoute>
                                     }
                                 />
