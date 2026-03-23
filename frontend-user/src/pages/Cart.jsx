@@ -29,7 +29,7 @@ function Cart() {
 
             <h1 className="text-4xl font-bold mb-12">Mon Panier</h1>
 
-            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
+            <div className=" mx-auto flex flex-col lg:flex-row gap-8">
 
                 {/* Film list (left) */}
                 <div className="grow space-y-4">
