@@ -4,9 +4,9 @@ import {
     getMyRentals,
     getRentalStats,
     createRental,
-    cancelRental,
-    getRecommendations
+    cancelRental
 } from '../controllers/rental.controller.js';
+import {admin, protect} from "../middleware/auth.middleware.js";
 
 const router = express.Router(); 
 
@@ -16,15 +16,14 @@ const router = express.Router();
 // pour éviter que "stats" ou "my-rentals" ne soient interprétés comme des IDs.
 
 // Routes GET 
-router.get('/', getAllRentals); 
-router.get('/my-rentals', getMyRentals); 
-router.get('/stats', getRentalStats); 
-router.get('/recommendations', getRecommendations); // Route bonus 
+router.get('/', protect, admin, getAllRentals);
+router.get('/my-rentals', protect, admin, getMyRentals);
+router.get('/stats', protect, admin, getRentalStats);
 
 // Route POST 
-router.post('/', createRental); 
+router.post('/', protect, admin, createRental);
 
 // Route DELETE 
-router.delete('/:id', cancelRental); 
+router.delete('/:id', protect, admin, cancelRental);
 
 export default router; 
