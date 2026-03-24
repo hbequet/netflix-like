@@ -4,6 +4,7 @@ import cors from 'cors';
 import connectDB from './config/database.js';
 import mongoose from "mongoose";
 import movieRoutes from './routes/movie.routes.js';
+import rentalRoutes from "./routes/rental.routes.js";
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -63,6 +64,7 @@ app.get('/api/health', (req, res) => {
 
 // Utilisation de la Routes API
 app.use('/api/movies', movieRoutes);
+app.use('/api/rentals', rentalRoutes);
 
 app.use((req, res) => {
     res.status(404).json({
