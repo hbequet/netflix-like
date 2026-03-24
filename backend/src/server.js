@@ -5,6 +5,7 @@ import connectDB from './config/database.js';
 import mongoose from "mongoose";
 import movieRoutes from './routes/movie.routes.js';
 import rentalRoutes from "./routes/rental.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -53,18 +54,10 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// TODO: Importer et utiliser les routes - Prochaine séance si vous n’êtes pas trop lent ☺
-// import movieRoutes from './routes/movie.routes.js';
-// import authRoutes from './routes/auth.routes.js';
-// import rentalRoutes from './routes/rental.routes.js';
-// app.use('/api/movies', movieRoutes);
-// app.use('/api/auth', authRoutes);
-// app.use('/api/rentals', rentalRoutes);
-// Gestion des erreurs 404
-
 // Utilisation de la Routes API
 app.use('/api/movies', movieRoutes);
 app.use('/api/rentals', rentalRoutes);
+app.use('/api/auth', authRoutes);
 
 app.use((req, res) => {
     res.status(404).json({
