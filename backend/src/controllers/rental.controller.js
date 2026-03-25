@@ -1,4 +1,5 @@
 import Rental from "../models/Rental.js";
+import Movie from "../models/Movie.js";
 
 // @desc Créer / Louer un film
 // @route POST /api/rentals
@@ -102,4 +103,58 @@ export const getRentalStats = async (req, res, next) => {
         "success": true,
         "data": stats
     });
+};
+
+// @desc Obtenir des recommandations personnalisées
+// @route GET /api/rentals/recommendations
+// @access Private
+export const getRecommendations = async (req, res, next) => {
+    try {
+        const userId = req.user._id;
+
+        const userRentals = await Rental.find({ user: userId }).populate('movie');
+        const rentedMovieIds = userRentals
+            .map(rental => rental.movie._id);
+
+        if (userRentals.length === 0) {
+            const popularMovies = await Movie.getPopularMovies(10);
+            return res.status(200).json({
+                success: true,
+                message: "Basé sur la popularité (aucun historique d'utilisateur)",
+                count: popularMovies.length,
+                data: popularMovies
+            });
+        }
+
+        const genreCounts = {};
+        userRentals.forEach(rental => {
+            if (rental.movie && rental.movie.genre) {
+                rental.movie.genre.forEach(genre => {
+                    genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+                });
+            }
+        });
+
+        const sortedGenres = Object.keys(genreCounts).sort((a, b) => genreCounts[b] - genreCounts[a]);
+
+        const topGenres = sortedGenres.slice(0, 3);
+
+        let recommendations = await Movie.find({
+            _id: { $nin: rentedMovieIds },
+            genre: { $in: topGenres },
+            isAvailable: true
+        })
+            .sort({ rating: -1, rentalCount: -1 })
+            .limit(10);
+
+        return res.status(200).json({
+            success: true,
+            message: "Basé sur vos préférences de genres",
+            count: recommendations.length,
+            data: recommendations
+        });
+
+    } catch (error) {
+        next(error);
+    }
 };
