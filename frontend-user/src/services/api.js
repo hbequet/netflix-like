@@ -1,4 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 /**
  * Fonction utilitaire pour gérer les requêtes fetch
  * @param {string} endpoint - L'endpoint de l'API
@@ -67,28 +68,49 @@ export const authAPI = {
         });
     },
     /**
-     * TODO :Connexion d'un utilisateur
+     * Connexion d'un utilisateur
      * @param {object} credentials - { email, password }
      */
-    login: async (credentials) => { },
+    login: async (credentials) => {
+        return await fetchAPI('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify(credentials)
+        });
+    },
     /**
-     * TODO :Obtenir le profil de l'utilisateur connecté
+     * Obtenir le profil de l'utilisateur connecté
      */
-    getMe: async () => { },
+    getMe: async () => {
+        return await fetchAPI('/auth/me');
+    },
     /**
-     * TODO :Mettre à jour le profil
+     * Mettre à jour le profil
      * @param {object} updates - { name, email }
      */
-    updateProfile: async (updates) => { },
+    updateProfile: async (updates) => {
+        return await fetchAPI('/auth/profile', {
+            method: 'PUT',
+            body: JSON.stringify(updates)
+        });
+    },
     /**
-     * TODO : Changer le mot de passe
+     * Changer le mot de passe
      * @param {object} passwords - { currentPassword, newPassword }
      */
-    changePassword: async (passwords) => { },
+    changePassword: async (passwords) => {
+        return await fetchAPI('/auth/password', {
+            method: 'PUT',
+            body: JSON.stringify(passwords)
+        });
+    },
     /**
-     * TODO : Déconnexion
+     * Déconnexion
      */
-    logout: async () => { }
+    logout: async () => {
+        return await fetchAPI('/auth/logout', {
+            method: 'POST'
+        });
+    }
 };
 
 // ==================== MOVIES ENDPOINTS ====================
@@ -110,91 +132,169 @@ export const moviesAPI = {
         return await fetchAPI(endpoint);
     },
     /**
-     * TODO : Obtenir un film par son ID
+     * Obtenir un film par son ID
      * @param {string} id - ID du film
      */
-    getById: async (id) => { },
+    getById: async (id) => {
+        return await fetchAPI(`/movies/${id}`);
+    },
     /**
-     * TODO : Obtenir les films similaires
+     * Obtenir les films similaires
      * @param {string} id - ID du film
      */
-    getSimilar: async (id) => {},
+    getSimilar: async (id) => {
+        return await fetchAPI(`/movies/${id}/similar`);
+    },
     /**
-     * TODO : Créer un nouveau film (admin)
+     * Créer un nouveau film (admin)
      * @param {object} movieData - Données du film
      */
-    create: async (movieData) => {},
+    create: async (movieData) => {
+        return await fetchAPI('/movies', {
+            method: 'POST',
+            body: JSON.stringify(movieData)
+        });
+    },
     /**
-     * TODO : Mettre à jour un film (admin)
+     * Mettre à jour un film (admin)
      * @param {string} id - ID du film
      * @param {object} updates - Données à mettre à jour
      */
-    update: async (id, updates) => {},
+    update: async (id, updates) => {
+        return await fetchAPI(`/movies/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(updates)
+        });
+    },
     /**
-     * TODO : Supprimer un film (admin)
+     * Supprimer un film (admin)
      * @param {string} id - ID du film
      */
-    delete: async (id) => {},
+    delete: async (id) => {
+        return await fetchAPI(`/movies/${id}`, {
+            method: 'DELETE'
+        });
+    },
     /**
-     * TODO : Obtenir les statistiques des films (admin)
+     * Obtenir les statistiques des films (admin)
      */
-    getStats: async () => {},
+    getStats: async () => {
+        return await fetchAPI('/movies/stats');
+    },
     /**
-     * TODO : Recherche avancée
+     * Recherche avancée
      * @param {object} filters - Filtres de recherche
      */
-    search: async (filters) => { }
+    search: async (filters) => {
+        const queryParams = new URLSearchParams();
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                queryParams.append(key, value);
+            }
+        });
+        const queryString = queryParams.toString();
+        const endpoint = queryString ? `/movies/search?${queryString}` : '/movies/search';
+        return await fetchAPI(endpoint);
+    }
 };
 
 // ==================== RENTALS ENDPOINTS ====================
 export const rentalsAPI = {
     /**
-     * TODO : Louer un film
+     * Louer un film
      * @param {string} movieId - ID du film à louer
      */
-    rent: async (movieId) => { },
+    rent: async (movieId) => {
+        return await fetchAPI('/rentals', {
+            method: 'POST',
+            body: JSON.stringify({ movieId })
+        });
+    },
     /**
-     * TODO : Obtenir mes locations
+     * Obtenir mes locations
      * @param {object} params - { status: 'active' | 'expired' | 'all' }
      */
-    getMyRentals: async (params = {}) => { },
+    getMyRentals: async (params = {}) => {
+        const queryParams = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                queryParams.append(key, value);
+            }
+        });
+        const queryString = queryParams.toString();
+        const endpoint = queryString ? `/rentals/me?${queryString}` : '/rentals/me';
+        return await fetchAPI(endpoint);
+    },
     /**
-     * TODO : Obtenir toutes les locations (admin)
+     * Obtenir toutes les locations (admin)
      * @param {object} params - { page, limit, status }
      */
-    getAll: async (params = {}) => {},
+    getAll: async (params = {}) => {
+        const queryParams = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                queryParams.append(key, value);
+            }
+        });
+        const queryString = queryParams.toString();
+        const endpoint = queryString ? `/rentals?${queryString}` : '/rentals';
+        return await fetchAPI(endpoint);
+    },
     /**
-     * TODO : Annuler une location
+     * Annuler une location
      * @param {string} id - ID de la location
      */
-    cancel: async (id) => {},
+    cancel: async (id) => {
+        return await fetchAPI(`/rentals/${id}/cancel`, {
+            method: 'PUT'
+        });
+    },
     /**
      * Obtenir les statistiques des locations (admin)
      */
-    getStats: async () => {}
+    getStats: async () => {
+        return await fetchAPI('/rentals/stats');
+    }
 };
 
 // ==================== HELPER FUNCTIONS ====================
 /**
- * TODO : Vérifier si l'utilisateur est connecté
+ * Vérifier si l'utilisateur est connecté
  */
-export const isAuthenticated = () => {};
+export const isAuthenticated = () => {
+    return !!localStorage.getItem('token');
+};
+
 /**
- * TODO : Obtenir le token actuel
+ * Obtenir le token actuel
  */
-export const getToken = () => {};
+export const getToken = () => {
+    return localStorage.getItem('token');
+};
+
 /**
- * TODO : Sauvegarder les données d'authentification
+ * Sauvegarder les données d'authentification
  */
-export const saveAuth = (token, user) => {};
+export const saveAuth = (token, user) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+};
+
 /**
- * TODO : Supprimer les données d'authentification
+ * Supprimer les données d'authentification
  */
-export const clearAuth = () => {};
+export const clearAuth = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+};
+
 /**
- * TODO : Obtenir l'utilisateur depuis localStorage
+ * Obtenir l'utilisateur depuis localStorage
  */
-export const getUser = () => {};
+export const getUser = () => {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+};
 
 // Export par défaut
 export default {

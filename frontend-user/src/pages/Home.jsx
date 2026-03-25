@@ -3,8 +3,8 @@ import MovieList from "../components/movies/MovieList.jsx";
 import {useEffect, useState} from "react";
 import MovieFilter from "../components/movies/MovieFilter.jsx";
 import Navbar from "../components/common/Navbar.jsx";
-import moviesData from '../../../data/movies.json';
 import LoadingSpinner from "../components/common/LoadingSpinner.jsx";
+import { moviesAPI } from "../services/api.js";
 
 function Home() {
     const [populareMovies, setPopulareMovies] = useState([]);
@@ -17,13 +17,24 @@ function Home() {
     const [afterMovies, setAfterMovies] = useState([]);
 
     useEffect(() => {
-        setFilteredMovies(moviesData);
-        setPopulareMovies([...moviesData].sort(() => 0.5 - Math.random()).slice(0, 5));
-        setAfterMovies(moviesData.filter(movie =>
-            movie.year >= 2010
-        ).slice(0, 5));
-        setLoading(false);
-    }, [])
+        const fetchMovies = async () => {
+            try {
+                setLoading(true);
+                const response = await moviesAPI.getMovies();
+                const movies = Array.isArray(response.data) ? response : response.data || [];
+                setFilteredMovies(movies);
+                setPopulareMovies([...movies].sort(() => 0.5 - Math.random()).slice(0, 5));
+                setAfterMovies(movies.filter(movie =>
+                    movie.year >= 2010
+                ).slice(0, 5));
+            } catch (error) {
+                console.error("Erreur lors de la récupération des films :", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMovies();
+    }, []);
 
     console.log(afterMovies)
 
@@ -35,7 +46,7 @@ function Home() {
 
     return (
         <div>
-            <Navbar movies={populareMovies} cartItems={cartItems} onRemoveFromCart={onRemoveFromCart} />
+            <Navbar />
 
             <MovieHero movie={populareMovies[0]} />
 

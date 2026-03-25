@@ -1,4 +1,5 @@
 import {useContext, useState, useEffect, createContext} from 'react';
+import {authAPI} from "../services/api.js";
 
 const AuthContext = createContext();
 
@@ -16,17 +17,14 @@ export function AuthProvider({ children }) {
     // Fonction de connexion
     const login = async (email, password) => {
         try {
-            // TODO: Sera remplacé plus tard par la vraie API (séance 8 ou 9 , ça dépend ;-))
-            // Simulation
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            const mockUser = {
-                id: Date.now(),
-                email: email,
-                name: email.split('@')[0],
-                avatar: `https://ui-avatars.com/api/?name=${email}&background=e50914&color=fff`
-            };
-            localStorage.setItem('user', JSON.stringify(mockUser));
-            setUser(mockUser);
+            setLoading(true);
+            const response = await authAPI.login({email, password});
+            const user = response.user;
+
+            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('token', response.token);
+            setUser(user);
+            setLoading(false);
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
@@ -35,14 +33,22 @@ export function AuthProvider({ children }) {
 
     // Fonction d'inscription
     const register = async (name, email, password) => {
-        await login(email, password);
+        setLoading(true);
+        const response = await authAPI.register({name, email, password});
+        const user = response.user;
+        setUser(user);
+        localStorage.setItem('user', JSON.stringify(user));
+        setLoading(false);
+        return { success: true };
     };
 
     // Fonction de déconnexion
     const logout = () => {
+        setLoading(true);
         localStorage.removeItem('user');
         localStorage.removeItem('rentals');
         setUser(null);
+        setLoading(false);
     };
 
     // Vérifier si l'utilisateur est connecté

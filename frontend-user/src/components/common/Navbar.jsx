@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import SearchBar from "../movies/SearchBar.jsx";
 import CartButton from "./CartButton.jsx";
-import {Link, NavLink, useNavigate} from 'react-router-dom';
-import Button from "./Button.jsx";
+import {Link, NavLink} from 'react-router-dom';
 import {useAuth} from "../../context/AuthProvider.jsx";
 
 function Navbar() {
