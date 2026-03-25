@@ -1,122 +1,125 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import {getUser, isAuthenticated, rentalsAPI} from "../services/api.js";
+import {createContext, useContext, useEffect, useState} from "react";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-    // Initialisation des états avec le localStorage
     const [cart, setCart] = useState(() => {
         const savedCart = localStorage.getItem('cart');
         return savedCart ? JSON.parse(savedCart) : [];
     });
 
-    const [rentals, setRentals] = useState(() => {
-        const savedRentals = localStorage.getItem('rentals');
-        return savedRentals ? JSON.parse(savedRentals) : [];
-    });
+    const [rentals, setRentals] = useState([]);
 
-    // Sauvegarde automatique dès que le panier ou les locations changent
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
-    useEffect(() => {
-        localStorage.setItem('rentals', JSON.stringify(rentals));
-    }, [rentals]);
-
-    // Ajouter au panier (en évitant les doublons)
-    const addToCart = (movie) => {
-        if (!isInCart(movie.id)) {
-            setCart((prev) => [...prev, movie]);
+    const fetchUserRentals = async () => {
+        if (!isAuthenticated()) return;
+        try {
+            const response = await rentalsAPI.getMyRentals();
+            if (response.success) {
+                setRentals(response.data);
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des locations:", error);
         }
     };
 
-    // Retirer du panier
-    const removeFromCart = (movieId) => {
-        setCart((prev) => prev.filter(item => item.id !== movieId));
+    useEffect(() => {
+        fetchUserRentals();
+    }, []);
+
+    const addToCart = (movie) => {
+        if (!isInCart(movie._id)) setCart((prev) => [...prev, movie]);
+    };
+    const removeFromCart = (movieId) => setCart((prev) => prev.filter(item => item._id !== movieId));
+    const clearCart = () => setCart([]);
+    const getCartTotal = () => cart.reduce((total, movie) => total + (movie.price || 0), 0).toFixed(2);
+    const getCartCount = () => cart.length;
+    const isInCart = (movieId) => cart.some(item => item._id === movieId);
+
+    const isRented = (movieId) => {
+        return rentals.some(rental => {
+            const rentalMovieId = typeof rental.movie === 'object' ? rental.movie._id : rental.movie;
+            return rentalMovieId === movieId;
+        });
+    };
+    const getRentalByMovieId = (movieId) => {
+        return rentals.find(rental => {
+            const rentalMovieId = typeof rental.movie === 'object' ? rental.movie._id : rental.movie;
+            return rentalMovieId === movieId;
+        });
     };
 
-    // Vider le panier
-    const clearCart = () => {
-        setCart([]);
-    };
+    const rentMovie = async (movie) => {
+        if (!isAuthenticated()) return { success: false, message: "Vous devez être connecté" };
+        if (isRented(movie._id)) return { success: false, message: "Déjà loué" };
 
-    // Calculer le total (en supposant que movie.price existe)
-    const getCartTotal = () => {
-        return cart.reduce((total, movie) => total + (movie.price || 0), 0).toFixed(2);
-    };
+        try {
+            const rentalDate = new Date();
+            const returnDate = new Date();
+            returnDate.setDate(returnDate.getDate() + 7);
 
-    // Nombre d'items
-    const getCartCount = () => {
-        return cart.length;
-    };
+            const user = getUser();
 
-    // Logique interne pour créer un objet location
-    const createRentalObject = (movie) => {
-        const rentalDate = new Date();
-        const expiryDate = new Date();
-        expiryDate.setDate(expiryDate.getDate() + 7);
+            const response = await rentalsAPI.rent({
+                movie: movie._id,
+                user: user?._id,
+                rentalDate: rentalDate.toISOString(),
+                returnDate: returnDate.toISOString(),
+                status: 'active'
+            });
 
-        return {
-            id: Date.now() + Math.random(),
-            movieId: movie.id,
-            title: movie.title,
-            poster: movie.poster,
-            price: movie.price,
-            rentalDate: rentalDate.toISOString(),
-            expiryDate: expiryDate.toISOString()
-        };
-    };
-
-    // Louer un film unique
-    const rentMovie = (movie) => {
-        if (isRented(movie.id)) return { success: false, message: "Déjà loué" };
-
-        const newRental = createRentalObject(movie);
-        setRentals((prev) => [...prev, newRental]);
-        removeFromCart(movie.id);
-
-        return { success: true, rental: newRental };
+            if (response.success) {
+                // Rafraîchir les locations depuis le serveur ou ajouter localement
+                setRentals((prev) => [...prev, response.data]);
+                removeFromCart(movie._id);
+                return { success: true, rental: response.data };
+            }
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
     };
 
     // Louer tous les films du panier
-    const rentAllInCart = () => {
-        if (cart.length === 0) return { success: false };
+    const rentAllInCart = async () => {
+        if (!isAuthenticated()) return { success: false, message: "Vous devez être connecté" };
+        if (cart.length === 0) return { success: false, message: "Panier vide" };
 
-        const newRentals = cart.map(movie => createRentalObject(movie));
-        setRentals((prev) => [...prev, ...newRentals]);
-        clearCart();
+        try {
+            const user = getUser();
+            const rentalDate = new Date();
+            const returnDate = new Date();
+            returnDate.setDate(returnDate.getDate() + 7);
 
-        return { success: true, count: newRentals.length };
-    };
+            const promises = cart.map(movie =>
+                rentalsAPI.rent({
+                    movie: movie._id,
+                    user: user?._id,
+                    rentalDate: rentalDate.toISOString(),
+                    returnDate: returnDate.toISOString(),
+                    status: 'active'
+                })
+            );
 
-    // Vérifier si un film est loué
-    const isRented = (movieId) => {
-        return rentals.some(rental => rental.movieId === movieId);
-    };
+            await Promise.all(promises);
 
-    // Obtenir la location d'un film
-    const getRentalByMovieId = (movieId) => {
-        return rentals.find(rental => rental.movieId === movieId);
-    };
+            // Une fois que tout est loué, on rafraîchit la liste complète depuis le backend
+            await fetchUserRentals();
+            clearCart();
 
-    // Vérifier si un film est dans le panier
-    const isInCart = (movieId) => {
-        return cart.some(item => item.id === movieId);
+            return { success: true, count: cart.length };
+        } catch (error) {
+            return { success: false, message: "Erreur lors de la location du panier." };
+        }
     };
 
     const value = {
-        cart,
-        rentals,
-        addToCart,
-        removeFromCart,
-        clearCart,
-        getCartTotal,
-        getCartCount,
-        rentMovie,
-        rentAllInCart,
-        isRented,
-        getRentalByMovieId,
-        isInCart
+        cart, rentals, addToCart, removeFromCart, clearCart, getCartTotal,
+        getCartCount, rentMovie, rentAllInCart, isRented, getRentalByMovieId, isInCart,
+        refreshRentals: fetchUserRentals // Exposé au cas où tu as besoin de forcer un refresh ailleurs
     };
 
     return (

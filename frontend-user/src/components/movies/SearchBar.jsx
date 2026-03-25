@@ -57,7 +57,7 @@ function SearchBar({ movies}) {
                 <div className="absolute mt-2 w-full bg-[#161824] border border-gray-700 rounded-lg z-10 shadow-xl overflow-hidden py-2">
                     {suggestedMovies.map(movie => (
                         <div
-                            key={movie.id}
+                            key={movie._id}
                             onClick={() => handleSelect(movie)}
                             className="flex items-center gap-4 px-4 py-2 hover:bg-gray-800 cursor-pointer transition-colors duration-150"
                         >

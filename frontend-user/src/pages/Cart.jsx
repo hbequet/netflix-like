@@ -34,7 +34,7 @@ function Cart() {
                 {/* Film list (left) */}
                 <div className="grow space-y-4">
                     {cart.map((movie) => (
-                        <div key={movie.id} className="flex bg-[#0f121d] rounded-lg overflow-hidden border border-gray-800 p-4 items-center group">
+                        <div key={movie._id} className="flex bg-[#0f121d] rounded-lg overflow-hidden border border-gray-800 p-4 items-center group">
                             {/* Poster */}
                             <img
                                 src={movie.poster}
@@ -55,7 +55,7 @@ function Cart() {
 
                             {/* Delete button */}
                             <button
-                                onClick={() => removeFromCart(movie.id)}
+                                onClick={() => removeFromCart(movie._id)}
                                 className="p-3 text-gray-500 hover:text-red-500 transition-colors"
                                 title="Supprimer du panier"
                             >

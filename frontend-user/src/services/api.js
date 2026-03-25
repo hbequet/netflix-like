@@ -200,61 +200,23 @@ export const moviesAPI = {
 
 // ==================== RENTALS ENDPOINTS ====================
 export const rentalsAPI = {
-    /**
-     * Louer un film
-     * @param {string} movieId - ID du film à louer
-     */
-    rent: async (movieId) => {
+    rent: async (rentalData) => {
         return await fetchAPI('/rentals', {
             method: 'POST',
-            body: JSON.stringify({ movieId })
+            body: JSON.stringify(rentalData)
         });
     },
-    /**
-     * Obtenir mes locations
-     * @param {object} params - { status: 'active' | 'expired' | 'all' }
-     */
     getMyRentals: async (params = {}) => {
-        const queryParams = new URLSearchParams();
-        Object.entries(params).forEach(([key, value]) => {
-            if (value !== undefined && value !== null && value !== '') {
-                queryParams.append(key, value);
-            }
-        });
-        const queryString = queryParams.toString();
-        const endpoint = queryString ? `/rentals/me?${queryString}` : '/rentals/me';
-        return await fetchAPI(endpoint);
+        const queryParams = new URLSearchParams(params).toString();
+        return await fetchAPI(queryParams ? `/rentals/my-rentals?${queryParams}` : '/rentals/my-rentals');
     },
-    /**
-     * Obtenir toutes les locations (admin)
-     * @param {object} params - { page, limit, status }
-     */
     getAll: async (params = {}) => {
-        const queryParams = new URLSearchParams();
-        Object.entries(params).forEach(([key, value]) => {
-            if (value !== undefined && value !== null && value !== '') {
-                queryParams.append(key, value);
-            }
-        });
-        const queryString = queryParams.toString();
-        const endpoint = queryString ? `/rentals?${queryString}` : '/rentals';
-        return await fetchAPI(endpoint);
+        const queryParams = new URLSearchParams(params).toString();
+        return await fetchAPI(queryParams ? `/rentals?${queryParams}` : '/rentals');
     },
-    /**
-     * Annuler une location
-     * @param {string} id - ID de la location
-     */
-    cancel: async (id) => {
-        return await fetchAPI(`/rentals/${id}/cancel`, {
-            method: 'PUT'
-        });
-    },
-    /**
-     * Obtenir les statistiques des locations (admin)
-     */
-    getStats: async () => {
-        return await fetchAPI('/rentals/stats');
-    }
+    cancel: async (id) => fetchAPI(`/rentals/${id}`, { method: 'DELETE' }),
+    getStats: async () => fetchAPI('/rentals/stats'),
+    getRecommendations: async () => fetchAPI('/rentals/recommendations')
 };
 
 // ==================== HELPER FUNCTIONS ====================

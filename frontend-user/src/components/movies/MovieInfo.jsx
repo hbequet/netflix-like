@@ -1,13 +1,10 @@
 import Button from '../common/Button';
 import {Link, useNavigate} from 'react-router-dom';
-import Footer from "../layout/Footer.jsx";
 import {useCart} from "../../context/CartContext.jsx";
 
 function MovieInfo({ movie, setNotification }) {
     let navigate = useNavigate();
     let { addToCart, isInCart, isRented, getRentalByMovieId, rentMovie } = useCart();
-
-    console.log(isRented(movie.id))
 
     const handleRent = () => {
         if (localStorage.getItem('user') === null) {
@@ -15,7 +12,7 @@ function MovieInfo({ movie, setNotification }) {
             return;
         }
 
-        const alreadyRented = isRented(movie.id);
+        const alreadyRented = isRented(movie._id);
         if (alreadyRented) {
             setNotification({type: 'error', message: 'Vous avez déjà loué ce film'});
             return;
@@ -70,7 +67,7 @@ function MovieInfo({ movie, setNotification }) {
                         </div>
 
                         <div className="flex gap-4 mb-8">
-                            {isRented(movie.id) ? (
+                            {isRented(movie._id) ? (
                                 <div className="flex items-center gap-2 bg-green-900/30 border border-green-500 text-green-500 px-6 py-3 rounded-lg font-medium">
                                     <svg width="20" height="20" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
                                         <polyline
@@ -82,7 +79,7 @@ function MovieInfo({ movie, setNotification }) {
                                             strokeLinejoin="round"
                                         />
                                     </svg>
-                                    <span>Film loué jusqu'au {new Date(getRentalByMovieId(movie.id).expiryDate).toLocaleDateString('fr-FR')}</span>
+                                    <span>Film loué jusqu'au {new Date(getRentalByMovieId(movie._id).expiryDate).toLocaleDateString('fr-FR')}</span>
                                 </div>
                             ) : (
                                 <>
@@ -91,7 +88,7 @@ function MovieInfo({ movie, setNotification }) {
                                     </Button>
 
                                     <Button size="lg" onClick={handleCart} variant="secondary">
-                                        {isInCart(movie.id) ? "✅ Dans le panier" : "+ Ajouter au panier"}
+                                        {isInCart(movie._id) ? "✅ Dans le panier" : "+ Ajouter au panier"}
                                     </Button>
                                 </>
                             )}

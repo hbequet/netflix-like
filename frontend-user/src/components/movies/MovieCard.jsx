@@ -52,7 +52,7 @@ function MovieCard({ movie }) {
                     <Button size="sm" className="flex-1" onClick={() => rentMovie(movie)}>
                         ▶ Louer {movie.price}€
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate(`/movie/${movie.id}`)}>
+                    <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate(`/movie/${movie._id}`)}>
                         + Info
                     </Button>
                 </div>

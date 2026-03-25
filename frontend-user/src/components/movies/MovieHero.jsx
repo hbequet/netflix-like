@@ -7,7 +7,7 @@ function MovieHero({ movie }) {
     let { rentMovie } = useCart();
 
     const handleMoreInfo = (e) => {
-        navigate(`/movie/${movie.id}`);
+        navigate(`/movie/${movie._id}`);
     }
 
     return (

@@ -1,12 +1,12 @@
 import {useNavigate, useParams} from 'react-router-dom';
 import {useEffect, useState} from "react";
-import moviesData from '../../../data/movies.json';
 import Navbar from "../components/common/Navbar.jsx";
 import Button from "../components/common/Button.jsx";
 import MovieInfo from "../components/movies/MovieInfo.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import Breadcrumb from "../components/common/Breadcrumb.jsx";
 import LoadingSpinner from "../components/common/LoadingSpinner.jsx";
+import { moviesAPI } from "../services/api.js";
 
 function MovieDetail() {
     const { id } = useParams();
@@ -14,19 +14,33 @@ function MovieDetail() {
     const [loading, setLoading] = useState(true);
     const [foundMovie, setFoundMovie] = useState(null);
     const [notification, setNotification] = useState(null);
+    console.log("MovieDetail rendered with _id:", id);
 
     const toHome = (e) => {
         navigate('/');
     }
 
     useEffect(() => {
-        const movie = moviesData.find(movie => movie.id === parseInt(id));
-        if (movie) {
-            setFoundMovie(movie);
-        } else {
-            setLoading(null);
+        const fetchMovie = async () => {
+            try {
+                setLoading(true);
+                console.log("Fetching movie with ID:", id);
+                const response = await moviesAPI.getById(id);
+                console.log("API response for movie:", response);
+                const movie = response.data || response;
+                setFoundMovie(movie);
+            } catch (error) {
+                console.error("Erreur lors de la récupération du film :", error);
+                setFoundMovie(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+        console.log("useEffect triggered with _id:", id);
+        if (id) {
+            console.log("Starting to fetch movie with ID:", id);
+            fetchMovie();
         }
-        setLoading(false);
     }, [id])
 
     if (loading) {
@@ -53,7 +67,7 @@ function MovieDetail() {
 
     return (
         <div>
-            <Navbar movies={moviesData} />
+            <Navbar movies={[]} />
 
             <div className="container mx-auto px-4 pt-24">
                 <Breadcrumb items={[ { label: 'Films', path: '/' }, { label: foundMovie.genre, path: `/?genre=${foundMovie.genre}` }, { label: foundMovie.title }]} />

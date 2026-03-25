@@ -12,16 +12,14 @@ function Home() {
 
     const [filteredMovies, setFilteredMovies] = useState([]);
 
-    const [cartItems, setCartItems] = useState([]);
-
     const [afterMovies, setAfterMovies] = useState([]);
 
     useEffect(() => {
         const fetchMovies = async () => {
             try {
                 setLoading(true);
-                const response = await moviesAPI.getMovies();
-                const movies = Array.isArray(response.data) ? response : response.data || [];
+                const response = await moviesAPI.getAll();
+                const movies = response.movies;
                 setFilteredMovies(movies);
                 setPopulareMovies([...movies].sort(() => 0.5 - Math.random()).slice(0, 5));
                 setAfterMovies(movies.filter(movie =>
@@ -39,10 +37,6 @@ function Home() {
     console.log(afterMovies)
 
     if (loading) return <LoadingSpinner />;
-
-    function onRemoveFromCart(id) {
-        setCartItems(cartItems.filter(m => m.id !== id));
-    }
 
     return (
         <div>
